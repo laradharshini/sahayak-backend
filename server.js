@@ -9,7 +9,7 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.AIzaSyDQPI0tMoFrv3VHCeeQLhAPODXd27byRcQ);
 
 app.post("/ask", async (req, res) => {
   const prompt = req.body.prompt;
@@ -18,10 +18,9 @@ app.post("/ask", async (req, res) => {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-    const result = await model.generateContent({
-      contents: [{ parts: [{ text: prompt }] }]
-    });
+    const chat = model.startChat({ history: [] }); // initialize chat session
 
+    const result = await chat.sendMessage(prompt);
     const response = await result.response;
     const text = response.text();
 
