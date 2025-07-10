@@ -13,13 +13,22 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 app.post("/ask", async (req, res) => {
   const prompt = req.body.prompt;
+  console.log("🔵 Prompt received:", prompt);
+
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const result = await model.generateContent(prompt);
+
+    const result = await model.generateContent({
+      contents: [{ parts: [{ text: prompt }] }]
+    });
+
     const response = await result.response;
-    res.json({ result: response.text() });
+    const text = response.text();
+
+    console.log("✅ Gemini response:", text);
+    res.json({ result: text });
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error:", err);
     res.status(500).json({ result: "Error generating content." });
   }
 });
